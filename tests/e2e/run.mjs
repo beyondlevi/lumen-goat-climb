@@ -33,7 +33,8 @@ function check(name, ok, detail = '') {
 
 async function play(browserType, name) {
   const browser = await browserType.launch(process.env.CHROME_PATH && name === 'chromium' ? {executablePath: process.env.CHROME_PATH} : {});
-  const page = await browser.newPage({viewport: {width: 480, height: 640}});
+  // Lumen gives a web app the middle square of the HUD, 600 x 600 CSS px.
+  const page = await browser.newPage({viewport: {width: 600, height: 600}});
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   const external = [];
@@ -47,7 +48,19 @@ async function play(browserType, name) {
   const key = async (k) => { await page.keyboard.press(k); await page.waitForTimeout(80); };
 
   check(`${name}: title`, (await state()).screen === 'title');
+  const box = await page.evaluate(() => document.getElementById('game').getBoundingClientRect().toJSON());
+  check(`${name}: the game fits the screen`, box.left >= 0 && box.top >= 0 && box.right <= 600 && box.bottom <= 600, JSON.stringify(box));
   await shot('01-title');
+
+  // On the glasses, Gecko's GPU process can restart while the display sleeps, and the canvas
+  // comes back with its state reset: the next frame has to draw at the right scale again.
+  await page.evaluate(() => document.getElementById('game').getContext('2d').setTransform(1, 0, 0, 1, 0, 0));
+  await page.waitForTimeout(150);
+  const scale = await page.evaluate(() => {
+    const canvas = document.getElementById('game');
+    return {now: canvas.getContext('2d').getTransform().a, expected: canvas.width / 480};
+  });
+  check(`${name}: a reset canvas is drawn at its scale again`, Math.abs(scale.now - scale.expected) < 1e-6, `${scale.now} vs ${scale.expected}`);
   await key('Enter');
   check(`${name}: how to play`, (await state()).screen === 'howto');
   await shot('02-howto');

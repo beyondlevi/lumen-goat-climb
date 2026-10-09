@@ -33,7 +33,10 @@ const canvas = document.getElementById('game') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d', {alpha: false})!;
 const game = new Game(seed, store);
 
-/** The 480 x 640 world, scaled to fit the screen (the Rokid HUD is exactly that; MRBD is 600 x 600). */
+/** Canvas pixels per world unit, set by [fit]. */
+let pixels = 1;
+
+/** The 480 x 640 world, scaled to fit the screen (Lumen gives a web app the HUD's 600 x 600 square). */
 function fit(): void {
   const scale = Math.min(innerWidth / WIDTH, innerHeight / HEIGHT);
   const dpr = devicePixelRatio || 1;
@@ -41,10 +44,21 @@ function fit(): void {
   canvas.style.height = `${Math.floor(HEIGHT * scale)}px`;
   canvas.width = Math.floor(WIDTH * scale * dpr);
   canvas.height = Math.floor(HEIGHT * scale * dpr);
-  ctx.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
+  pixels = canvas.width / WIDTH;
+}
+
+/**
+ * Draws a frame, setting the scale every time: when the glasses sleep, Android may kill Gecko's
+ * GPU process, and the canvas comes back with its state reset. A scale set once was lost then,
+ * and the game came back drawn at 1:1, cut at the right and the bottom.
+ */
+function draw(): void {
+  ctx.setTransform(pixels, 0, 0, pixels, 0, 0);
+  render(ctx, game, strings, clock);
 }
 
 addEventListener('resize', fit);
+canvas.addEventListener('contextrestored', fit);
 fit();
 
 // The band arrives as keys: swipes are arrows, the index tap is Enter, the middle tap is Escape
@@ -63,7 +77,7 @@ function loop(now: number): void {
   last = now;
   clock += dt;
   game.update(dt);
-  render(ctx, game, strings, clock);
+  draw();
   frame = requestAnimationFrame(loop);
 }
 
@@ -73,6 +87,7 @@ document.addEventListener('visibilitychange', () => {
     game.hidden();
     cancelAnimationFrame(frame);
   } else {
+    fit();
     last = performance.now();
     frame = requestAnimationFrame(loop);
   }
@@ -101,7 +116,7 @@ if (params.has('test')) {
     state: () => ({screen: game.screen, height: game.height, phase: game.phase.number, onLedge: game.goat.on !== null, y: game.goat.y, best: game.best}),
     step: (seconds: number) => {
       for (let i = 0; i < Math.round(seconds * 60); i++) game.update(1 / 60);
-      render(ctx, game, strings, clock);
+      draw();
     },
     warp: (meters: number) => game.warp(meters),
   };
