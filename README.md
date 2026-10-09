@@ -30,11 +30,12 @@ never the only way up.
 
 ## Install on the glasses
 
-Download `lumen-goat-climb.mrbd.zip` from the [releases](https://github.com/beyondlevi/lumen-goat-climb/releases)
-and add it from the Lumen companion's Apps tab, or push it to the glasses:
+Download the `.mrbd.zip` from the [latest release](https://github.com/beyondlevi/lumen-goat-climb/releases/latest)
+(for 0.1.0, `lumen-goat-climb-0.1.0.mrbd.zip`) and add it from the Lumen companion's Apps tab, or
+push it to the glasses:
 
 ```sh
-adb push lumen-goat-climb.mrbd.zip /sdcard/Android/data/dev.lumen.glasses/files/webapps/
+adb push lumen-goat-climb-0.1.0.mrbd.zip /sdcard/Android/data/dev.lumen.glasses/files/webapps/
 ```
 
 Lumen installs it the next time its home opens. The game runs offline: it never uses the
