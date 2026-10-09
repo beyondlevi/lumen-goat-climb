@@ -132,6 +132,20 @@ describe('a game', () => {
     expect(game.best).toBe(50);
   });
 
+  it('keeps the height of a climb that is quit from the pause', () => {
+    const store = memoryStore(10);
+    const game = new Game(4, store);
+    game.key('ArrowUp');
+    game.warp(30);
+    const reached = game.height;
+    expect(reached).toBeGreaterThan(10);
+    game.key('Escape');
+    game.key('Escape');
+    expect(game.screen).toBe('title');
+    expect(game.best).toBe(reached);
+    expect(store.get().best).toBe(reached);
+  });
+
   it('can be climbed with the band\'s moves through the first four phases', () => {
     // A simple player (no planning around wind or ice) gets through on almost every mountain.
     let through = 0;

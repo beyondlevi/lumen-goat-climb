@@ -1,6 +1,6 @@
 import type {PhaseKey} from './phases';
 
-/** Every text the game shows. English is the default; Portuguese for pt-* (the glasses run pt-PT). */
+/** Every text the game shows. English is the default; Brazilian Portuguese for any pt-* (the glasses run pt-PT). */
 const en = {
   title1: 'GOAT',
   title2: 'CLIMB',
@@ -52,16 +52,16 @@ const pt: Strings = {
   tagline: 'ATÉ ONDE VOCÊ SOBE?',
   play: 'DESLIZE PARA CIMA',
   bestLine: 'Recorde: {meters} m · Fase {phase}',
-  firstClimb: 'A sua primeira subida',
+  firstClimb: 'Sua primeira subida',
   titleHints: 'Indicador: como jogar · Médio: sair',
   howTitle: 'COMO JOGAR',
   swipeLeft: 'DESLIZE À ESQUERDA',
-  swipeLeftText: 'Salta para cima e para a esquerda',
+  swipeLeftText: 'Pula para cima e para a esquerda',
   swipeUp: 'DESLIZE PARA CIMA',
-  swipeUpText: 'Salta direto para cima',
+  swipeUpText: 'Pula direto para cima',
   swipeRight: 'DESLIZE À DIREITA',
-  swipeRightText: 'Salta para cima e para a direita',
-  howLand: 'Pouse numa saliência para saltar de novo. No ar, deslize para o lado para desviar e para cima para parar. Saindo por um lado, volta pelo outro.',
+  swipeRightText: 'Pula para cima e para a direita',
+  howLand: 'Pouse numa saliência para pular de novo. No ar, deslize para o lado para desviar e para cima para parar. Saindo por um lado, volta pelo outro.',
   howRise: 'A montanha não para de subir: caia abaixo da borda e a subida acaba.',
   howPause: 'Médio: pausa',
   left: 'ESQ.',

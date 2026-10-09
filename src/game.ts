@@ -132,7 +132,7 @@ export class Game {
         if (key === 'ArrowLeft') return this.move('left');
         if (key === 'ArrowRight') return this.move('right');
         if (key === 'ArrowUp') return this.move('up');
-        if (key === 'Escape') return this.show('paused');
+        if (key === 'Escape') return this.pause();
         return false;
       case 'paused':
         if (key === 'Enter' || key === 'ArrowUp') return this.show('playing');
@@ -153,12 +153,18 @@ export class Game {
 
   /** The app went to the background: a climb waits paused. */
   hidden(): void {
-    if (this.screen === 'playing') this.screen = 'paused';
+    if (this.screen === 'playing') this.pause();
   }
 
   private show(screen: Screen): boolean {
     this.screen = screen;
     return true;
+  }
+
+  /** A paused climb already counts for the record: quitting it, or the app closing, keeps it. */
+  private pause(): boolean {
+    this.keepRecord();
+    return this.show('paused');
   }
 
   private begin(): boolean {
@@ -355,6 +361,10 @@ export class Game {
 
   private over(): void {
     this.screen = 'over';
+    this.keepRecord();
+  }
+
+  private keepRecord(): void {
     if (this.height > this.best) {
       this.best = this.height;
       this.bestPhase = this.phase.number;
